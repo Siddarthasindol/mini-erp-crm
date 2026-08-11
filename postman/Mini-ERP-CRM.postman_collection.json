@@ -1,0 +1,415 @@
+{
+	"info": {
+		"_postman_id": "a7b8c9d0-1234-4567-89ab-cdef01234567",
+		"name": "Mini ERP + CRM Operations Portal API",
+		"description": "Complete REST API collection for Mini ERP + CRM Portal featuring Auth, Role Access, Customer CRM, Inventory, Stock Movements, Challans, and Dashboard Statistics.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set('token', jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login Sales",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"sales@test.com\",\n  \"password\": \"Sales@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login Warehouse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"warehouse@test.com\",\n  \"password\": \"Warehouse@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login Accounts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"accounts@test.com\",\n  \"password\": \"Accounts@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Customer CRM",
+			"item": [
+				{
+					"name": "Get Customers (Paginated & Filtered)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/customers?page=1&limit=10&search=&status=&customerType=",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" },
+								{ "key": "search", "value": "" },
+								{ "key": "status", "value": "" },
+								{ "key": "customerType", "value": "" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Ramesh Patel\",\n  \"mobile\": \"+91 99000 11223\",\n  \"email\": \"ramesh@pateltraders.in\",\n  \"businessName\": \"Patel Hardware & Electricals\",\n  \"gstNumber\": \"24PTLPA12345Z8\",\n  \"customerType\": \"WHOLESALE\",\n  \"address\": \"Main Market Road, Anand, Gujarat 388001\",\n  \"status\": \"LEAD\",\n  \"notes\": \"Initial inquiry for bulk electrical cables\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						}
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/customers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "1"]
+						}
+					}
+				},
+				{
+					"name": "Add Customer Follow-up",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"note\": \"Discussed Q3 discount structure. Client agreed to place order next week.\",\n  \"followUpDate\": \"2026-08-20\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/1/followups",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "1", "followups"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Products & Inventory",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/products?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"],
+							"query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+						}
+					}
+				},
+				{
+					"name": "Get Low Stock Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/products/low-stock",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", "low-stock"]
+						}
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Industrial Safety Gloves Heavy Duty\",\n  \"sku\": \"PPE-GLV-HD\",\n  \"category\": \"Safety & Protection\",\n  \"unitPrice\": 250.00,\n  \"currentStock\": 150,\n  \"minimumStock\": 30,\n  \"warehouseLocation\": \"Bay E1 - Bin 05\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Stock Movements",
+			"item": [
+				{
+					"name": "Create Stock Movement IN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": 1,\n  \"quantity\": 50,\n  \"movementType\": \"IN\",\n  \"reason\": \"Procurement Batch PO-2026-99\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/stock-movements",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock-movements"]
+						}
+					}
+				},
+				{
+					"name": "Get Stock Movements Audit Log",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/stock-movements?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock-movements"],
+							"query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Sales Delivery Challans",
+			"item": [
+				{
+					"name": "Create Draft Challan",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 5\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 2\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/challans",
+							"host": ["{{baseUrl}}"],
+							"path": ["challans"]
+						}
+					}
+				},
+				{
+					"name": "Get Challans List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/challans?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["challans"],
+							"query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+						}
+					}
+				},
+				{
+					"name": "Confirm Challan (Deducts Stock)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/challans/2/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["challans", "2", "confirm"]
+						}
+					}
+				},
+				{
+					"name": "Test Insufficient Stock Confirmation (Fails)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"items\": [\n    {\n      \"productId\": 3,\n      \"quantity\": 99999\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/challans",
+							"host": ["{{baseUrl}}"],
+							"path": ["challans"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Dashboard Statistics",
+			"item": [
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["dashboard", "stats"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id             Int             @id @default(autoincrement())
+  name           String
+  email          String          @unique
+  password       String
+  role           String          @default("SALES")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  stockMovements StockMovement[]
+  challans       Challan[]
+
+  @@map("users")
+}
+
+model Customer {
+  id           Int                @id @default(autoincrement())
+  name         String
+  mobile       String
+  email        String?
+  businessName String
+  gstNumber    String?
+  customerType String             @default("WHOLESALE")
+  address      String
+  status       String             @default("LEAD")
+  followUpDate DateTime?
+  notes        String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  followUps    CustomerFollowUp[]
+  challans     Challan[]
+
+  @@map("customers")
+}
+
+model CustomerFollowUp {
+  id           Int       @id @default(autoincrement())
+  customerId   Int
+  customer     Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  note         String
+  followUpDate DateTime?
+  createdBy    Int?
+  createdAt    DateTime  @default(now())
+
+  @@map("customer_followups")
+}
+
+model Product {
+  id                Int             @id @default(autoincrement())
+  name              String
+  sku               String          @unique
+  category          String
+  unitPrice         Float
+  currentStock      Int
+  minimumStock      Int
+  warehouseLocation String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  stockMovements    StockMovement[]
+  challanItems      ChallanItem[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity     Int
+  movementType String
+  reason       String
+  createdBy    Int
+  user         User     @relation(fields: [createdBy], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@map("stock_movements")
+}
+
+model Challan {
+  id            Int           @id @default(autoincrement())
+  challanNumber String        @unique
+  customerId    Int
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  totalQuantity Int
+  status        String        @default("DRAFT")
+  createdBy     Int
+  user          User          @relation(fields: [createdBy], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  items         ChallanItem[]
+
+  @@map("challans")
+}
+
+model ChallanItem {
+  id                  Int     @id @default(autoincrement())
+  challanId           Int
+  challan             Challan @relation(fields: [challanId], references: [id], onDelete: Cascade)
+  productId           Int
+  product             Product @relation(fields: [productId], references: [id])
+  productNameSnapshot String
+  skuSnapshot         String
+  unitPriceSnapshot   Float
+  quantity            Int
+
+  @@map("challan_items")
+}
